@@ -1,0 +1,10 @@
+[Unit]
+Description=Change keyboard layout to US on xscreensaver lock
+
+[Service]
+Type=simple
+ExecStart=%LOCALBIN%/xlockwatch
+Restart=always
+
+[Install]
+WantedBy=graphical-session.target

@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+####################################################
+# A utility script to use if you run xscreensaver  #
+# and use multiple keyboard layouts.               #
+# It should be run on login -                      #
+# call it in your ~/.bash_profile or ~/.profile    #
+# or register as target in a user systemd service  #
+####################################################
+
+function layout_switch() {
+    local current msg cmd
+
+    echo "Watching for XScreenSaver events..."
+    while read msg; do
+        cmd="$(echo "$msg" | awk '{print $1}')"
+
+        if [[ $cmd == "LOCK" ]]; then
+            current="$(setxkbmap -query | grep layout | awk '{print $2}')"
+            echo "Screen locked with ${current} layout; setting to US"
+            setxkbmap us
+        fi
+
+        if [[ $cmd == "UNBLANK" ]]; then
+            setxkbmap "$current"
+            echo "Switched back to $current; Unlocking screen..."
+        fi
+        echo "$cmd"
+    done
+}
+
+xscreensaver-command --watch | layout_switch
